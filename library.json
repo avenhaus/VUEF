@@ -1,7 +1,7 @@
 {
 	"name": "vuef",
-	"version": "0.3.0",
-	"keywords": "WebUI,web,ui,CLI,interface,config,configuration,state,registry,pub/sub,EEPROM,SPIFFS,WebServer,WebSocket,OTA,ESp,ESP32,Very Useful ESP Framework,VUEF",
+	"version": "0.2.0",
+	"keywords": "WebUI,web,ui,CLI,interface,config,configuration,state,registry,pub-sub,EEPROM,SPIFFS,WebServer,WebSocket,OTA,ESp,ESP32,Very Useful ESP Framework,VUEF",
 	"description": "Framework designed for ESP32 that provides a WebUI and CLI driven by a command and state registry.",
 	"repository": {
 		"type": "git",
