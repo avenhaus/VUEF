@@ -1,0 +1,29 @@
+<div id="settingstab" class="tabcontent panel">
+    <center>
+        <table>
+            <tr>
+                <td vertical-align: middle;><span style="font-size:1.5em; font-weight:bold">Settings</span></td>
+                <td style='padding:10px' class="tooltip">
+                    <span class="tooltip-text">Save configuration to EEPROM</span>
+                    <button type="button" class="btn btn-success" onclick="saveConfig();">
+                        <svg width='1.3em' height='1.2em'  version="2.0"> <use href="#icon-save" /> </svg>
+                    </button>
+                </td>
+                <td style='padding:10px' class="tooltip">
+                    <span class="tooltip-text">Refresh this list of settings</span> 
+                    <button type="button" id="settings_refresh_btn" class="btn btn-primary" onclick="refreshSettings();">
+                        <svg width='1.3em' height='1.2em'  version="2.0"> <use href="#icon-refresh" /> </svg>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    
+        <span id="settings_status"></span>
+        <div class="loader hide_it" id="settings_loader"></div>
+        <br>
+        <div class="container hide_it" id="settings_list_content">
+            <div id="settings_list_data"></div>
+        </div>
+    </center>
+    <br>
+</div>

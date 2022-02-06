@@ -1,0 +1,139 @@
+<html>
+    <head>
+    <!--removeIf(production)-->
+    <script src="js/alertdlg.js"></script>
+    <script src="js/statusdlg.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/control.js"></script>
+    <script src="js/restartdlg.js"></script>
+    <script src="js/http.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/SPIFFStab.js"></script>
+    <!--endRemoveIf(production)-->    <!-- smoosh -->
+        <link href="css/style.css" rel="stylesheet">
+    <!-- endsmoosh -->
+        <title>ESP32 Project</title>
+    </head>
+    <body> 
+        <div class="panel">
+        <center><h2 id="FW_NAME">ESP32 Project</h2>
+            <table>
+            <tr>
+                <td style='padding:10px; display:none;' class="tooltip" id="control-button">
+                    <span class="tooltip-text">Control Panel</span> 
+                    <button type="button" class="btn btn-control" onclick="controlTab();">
+                        <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-tasks" /> </svg>
+                    </button>
+                </td>
+                <td style='padding:10px; display:none;' class="tooltip"  id="settings-button">
+                    <span class="tooltip-text">Configuration Settings</span> 
+                    <button type="button" class="btn btn-info" onclick="settingsTab();">
+                        <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-wrench" /> </svg>
+                    </button>
+                </td>
+                <td style='padding:10px; display:none;' class="tooltip" id="spiffs-button">
+                    <span class="tooltip-text">Manage local files</span>
+                    <button type="button" class="btn btn-success" onclick="SPIFFStab('/');">
+                        <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-folder-open" /> </svg>
+                        </svg>
+                    </button>
+                </td>
+                <td style='padding:10px' class="tooltip">
+                    <span class="tooltip-text">Update the firmware wirelessly (OTA)</span> 
+                    <button id="settings_update_fw_btn" type="button" class="btn btn-warning" onclick="firmwareUpdateTab();">
+                        <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-cloud-download" /> </svg>
+                    </button>
+                </td>
+                <td style='padding:10px' class="tooltip">
+                    <span class="tooltip-text">Restart ESP32</span> 
+                    <button type="button" id="settings_restart_btn" class="btn btn-danger" onclick="restart_esp();">
+                        <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-power-button" /> </svg>
+                    </button>
+                </td>
+                <td style='padding:10px' class="tooltip">
+                    <span class="tooltip-text">Show system status</span> 
+                    <button type="button" id="settings_refresh_btn" class="btn btn-primary" onclick="statusdlg();">
+                        <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-question-sign" /> </svg>
+                    </button>
+                </td>
+            </tr>
+        </table>
+        <br>
+        </center>
+        <table width="100%">
+            <tr>
+            <!---
+                <td onclick='RL();' id="loginicon">
+                    <a class="btnimg">
+                    <svg width='1.3em' height='1.2em' viewBox='0 0 1300 1200'>
+                    <g transform='translate(50,1200) scale(1, -1)'>
+                    <path  fill='black' d='M600 1177q117 0 224 -45.5t184.5 -123t123 -184.5t45.5 -224t-45.5 -224t-123 -184.5t-184.5 -123t-224 -45.5t-224 45.5t-184.5 123t-123 184.5t-45.5 224t45.5 224t123 184.5t184.5 123t224 45.5zM588 941q-29 0 -59 -5.5t-63 -20.5t-58 -38.5t-41.5 -63t-16.5 -89.5 q0 -25 20 -25h131q30 -5 35 11q6 20 20.5 28t45.5 8q20 0 31.5 -10.5t11.5 -28.5q0 -23 -7 -34t-26 -18q-1 0 -13.5 -4t-19.5 -7.5t-20 -10.5t-22 -17t-18.5 -24t-15.5 -35t-8 -46q-1 -8 5.5 -16.5t20.5 -8.5h173q7 0 22 8t35 28t37.5 48t29.5 74t12 100q0 47 -17 83 t-42.5 57t-59.5 34.5t-64 18t-59 4.5zM675 400h-150q-10 0 -17.5 -7.5t-7.5 -17.5v-150q0 -10 7.5 -17.5t17.5 -7.5h150q10 0 17.5 7.5t7.5 17.5v150q0 10 -7.5 17.5t-17.5 7.5z' />
+                    </g>
+                    </svg>
+                    </a>
+                </td>  
+            -->
+                <td style="text-align:left;">
+                    <span id="MSG" class="blacklink"></span>
+                </td>
+                <td style="width:100%;"></td>
+            </tr>
+        </table>
+    </div>
+    <!-- template -->
+    <file-include w3-include-html="'sub/alertdlg.html'"></file-include>
+    <file-include w3-include-html="'sub/confirmdlg.html'"></file-include>
+    <file-include w3-include-html="'sub/scanwifidlg.html'"></file-include>
+    <file-include w3-include-html="'sub/statusdlg.html'"></file-include>
+    <file-include w3-include-html="'sub/SPIFFStab.html'"></file-include>
+    <file-include w3-include-html="'sub/settingstab.html'"></file-include>
+    <file-include w3-include-html="'sub/controltab.html'"></file-include>
+    <file-include w3-include-html="'sub/icons.html'"></file-include>
+    <!-- / template -->
+
+    <div class="panel tabcontent" id="FWUPDATE">
+        <div class="panel-heading">Firmware Update</div>
+        <div class="panel-body">
+            <table>
+                <tr>
+                    <td><input type="file" id="fw-select" name="myfiles[]"  accept=".bin, .bin.gz" /></td>
+                    <td><input class="btn btn-primary" type="button" id="ubut" onclick="Uploadfile();" value="Update"/></td>
+                    <td><progress style="visibility:hidden;" name='prgfw' id='prgfw' max='100'></progress></td>
+                    <td><span id='msg' style='visibility:hidden;'>Restarting, please wait....</span><span id='counter'></span></td>
+                </tr>
+            </table>
+            <br>If file name contains "spiffs", it will be used to update the SPIFFS partition.
+        </div>
+    </div>
+
+<!---
+                <div id="loginpage"class="modal">
+                    <div class="modal-content" >
+                        <div class="modal-header">
+                            <h3>Identification</h3>
+                        </div>
+                         <div class="modal-body">
+                              <span>
+                                <span class="modal-text" translate>User:</span>
+                                <input class='form-control'  type="text" id="lut" style="width:auto"/>
+                            </span>
+                            <hr>
+                            <span>
+                                <span class="modal-text" translate>Password:</span>
+                                <input class='form-control'  type="password" id="lpt" style="width:auto"/>
+                            </span>
+                            <br>
+                         </div>
+                          <div class="modal-footer">
+                            <input  type="button" class="btn btn-primary" onclick="SLR()" value="Submit"/>
+                         </div>
+                    </div>
+                </div>
+            --->
+        <!-- smoosh -->
+        <script src="js/script.js"></script>
+        <!-- endsmoosh -->
+    </body>
+</html>
+
+

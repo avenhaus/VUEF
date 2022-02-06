@@ -1,0 +1,32 @@
+<!-- alert Modal -->
+<div id="confirmdlg.html" class="modal topmodal">
+    <!-- alert content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal('cancel')"><b>&times;</b></span>
+            <h3>
+                <div class="modal-title"></div>
+            </h3>
+        </div>
+        <div class="modal-body">
+            <span>
+                <svg width='26px' height='24px' version="2.0" style='color:#337ab7;'> <use href="#icon-question-sign" /> </svg>"
+                &nbsp;&nbsp;
+                <span class="modal-text"></span>
+            </span>
+        </div>
+        <div class="modal-footer">
+            <span class="pull-right">
+                <button class="btn btn-primary" onclick="closeModal('yes');" translate>Yes</button>
+            </span>
+            <span class="pull-right">
+                &nbsp;&nbsp;
+            </span>
+            <span class="pull-right">
+                <button class="btn btn-warning" onclick="closeModal('no');" translate>No</button>
+            </span>
+        </div>
+    </div>
+    <!-- /alert content -->
+</div>
+<!-- /alert Modal -->
