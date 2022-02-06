@@ -4,7 +4,6 @@
 
 #include "VUEF.h"
 
-
 void otaInit(const char* hostname) {
 
     DEBUG_println(FST("Enabling OTA"));
@@ -46,5 +45,5 @@ void otaInit(const char* hostname) {
     ArduinoOTA.begin();
 
     DEBUG_printf(FST("OTA initialized. Hostname: '%s' IP address: "), hostname);
-    DEBUG_println(WiFi.localIP());
+    DEBUG_println(getLocalIp());
 }

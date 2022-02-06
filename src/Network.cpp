@@ -17,37 +17,50 @@
 #endif
 
 
-#ifndef WIFI_SSID
-#define WIFI_SSID "Best WIFI"
+#ifndef WIFI_STA_SSID
+#define WIFI_STA_SSID "Best WIFI"
 #endif
 
-#ifndef WIFI_PASSWORD
-#define WIFI_PASSWORD "WIFI Password"
+#ifndef WIFI_STA_PASSWORD
+#define WIFI_STA_PASSWORD "WIFI Password"
 #endif
 
-#ifndef WIFI_ACCESS_POINT_PASSWORD
+#ifndef WIFI_AP_SSID
+#define WIFI_AP_SSID PROJECT_NAME
+#endif
+
+#ifndef WIFI_AP_PASSWORD
 // Minimum 8 characters !!
-#define WIFI_ACCESS_POINT_PASSWORD "access42"
+#define WIFI_AP_PASSWORD "12345678"
 #endif
 
-#if ENABLE_NTP
-ConfigStr configTimeZone(FST("Time Zone"), 48, TIME_ZONE, FST("Time zone used for NTP"));
-ConfigStr configTimeFormat(FST("Time Format"), 16, TIME_FORMAT, FST("Format string used to print time"));
-ConfigStr configDateFormat(FST("Date Format"), 16, DATE_FORMAT, FST("Format string used to print date"));
-#endif
 
-RegGroup configGroupNetwork(FST("WIFI"), nullptr, FST("Network Settings"));
+RegGroup configGroupNetwork(FST("Network"), nullptr, FST("Network Settings"));
 
-ConfigStr configSSID(FST("SSID"), 36, WIFI_SSID, FST("Name of WIFI network"), 0, &configGroupNetwork);
-ConfigStr configPassword(FST("Password"), 64, WIFI_PASSWORD, FST("Password for WIFI network"), 0, &configGroupNetwork, 0,0,0,0, RF_PASSWORD);
+ConfigUInt8 configNetworkMode(FST("WIFI Mode"), 1, FST("Off/STA/AP"), 0, &configGroupNetwork);
+
+ConfigStr configStaSSID(FST("SSID"), 36, WIFI_STA_SSID, FST("Name of WIFI network"), 0, &configGroupNetwork, 0,0,0,0, RF_WIZARD);
+ConfigStr configStaPassword(FST("Password"), 64, WIFI_STA_PASSWORD, FST("Password for WIFI network"), 0, &configGroupNetwork, 0,0,0,0, RF_PASSWORD | RF_WIZARD);
 ConfigStr configHostname(FST("Hostname"), 32, HOSTNAME, FST("Name of this device on the network"), 0, &configGroupNetwork);
 
 ConfigIpAddr configIpAddr(FST("IP"), 0, FST("Fixed IP address of this device"), 0, &configGroupNetwork);
 ConfigIpAddr configGateway(FST("Gateway"), 0, FST("Gateway IP address"), 0, &configGroupNetwork);
 ConfigIpAddr configSubnet(FST("Subnet"), 0, FST("Subnet mask"), 0, &configGroupNetwork);
 ConfigIpAddr configDNS(FST("DNS"), 0, FST("Domain Name Server"), 0, &configGroupNetwork);
+const uint8_t AP_IP_ADR[4] PROGMEM = {192, 168, 0, 1};
+ConfigIpAddr configApIpAddr(FST("AP IP"), AP_IP_ADR, FST("IP address of this device in Access Point mode"), 0, &configGroupNetwork);
+ConfigStr configApSSID(FST("AP SSID"), 36, WIFI_AP_SSID, FST("Name of WIFI network in Access Point mode"), 0, &configGroupNetwork);
+ConfigStr configApPassword(FST("AP Password"), 64, WIFI_AP_PASSWORD, FST("Password for WIFI network in Access Point mode"), 0, &configGroupNetwork);
+ConfigUInt8 configApChannel(FST("AP Channel"), 1, FST("WIFI channel in Access Point mode"), 0, &configGroupNetwork);
 
-ConfigBool configNetworkDisabled(FST("disabled"), 0, FST("Disable networking"), 0, &configGroupNetwork);
+#if ENABLE_NTP
+ConfigStr configTimeZone(FST("Time Zone"), 48, TIME_ZONE, FST("Time zone used for NTP"), 0, &configGroupNetwork, 0,0,0,0, RF_WIZARD);
+ConfigStr configTimeFormat(FST("Time Format"), 16, TIME_FORMAT, FST("Format string used to print time"), 0, &configGroupNetwork);
+ConfigStr configDateFormat(FST("Date Format"), 16, DATE_FORMAT, FST("Format string used to print date"), 0, &configGroupNetwork);
+#endif
+
+// StateStr stateWifiConnection(FST("Connection"), FST("Not connected"), FST("WIFI connection state"), 0, &configGroupNetwork);
+
 
 Command cmdListNetorksJson(FST("networks"), 
 [] (const char* args, Print* stream) {
@@ -70,53 +83,171 @@ bool gotNtp = false;
 char fullHostname[64] = "";
 
 void otaInit(const char* fullHostname);
-void networkRun();
 void wsRun();
 
-void otaTask_(void* parameter ) {
-    while (true) {
-        networkRun();
-        // vTaskDelay(500);
+
+/*--------------------------------------------------------------*\
+ * Wait for WIFI Station to connect to Access Point
+\*--------------------------------------------------------------*/     
+bool wifiWaitForStaConnect() {
+    size_t count = 0;
+    for (size_t i = 0; i < 50; ++i) {
+        switch (WiFi.status()) {
+            case WL_NO_SSID_AVAIL:
+                DEBUG_println(FST("\nNo SSID"));
+                return false;
+            case WL_CONNECT_FAILED:
+                DEBUG_println(FST("\nConnection failed"));
+                return false;
+            case WL_CONNECTED:
+                DEBUG_print(FST("\nConnected - Local IP: "));
+                DEBUG_println(WiFi.localIP());
+                return true;
+            default:
+                if (!count) { DEBUG_print(FST("Connecting WIFI "));  }
+                else if ((count & 3) == 0) { DEBUG_print('.'); }
+                count++;
+                break;
+        }
+        delay(100);
     }
+    DEBUG_println(FST("\nTimed out connecting WIFI"));
+    return false;
 }
 
-void networkInit() {
-  const uint8_t* ip = configIpAddr.get();
-    if (ip[0] || ip[1] || ip[2] || ip[3]) {
-        // Static IP details...
-        IPAddress ip(ip);
-        IPAddress gateway(configGateway.get());
-        IPAddress subnet(configSubnet.get());
-        IPAddress dns(configDNS.get());
-        WiFi.config(ip, dns, gateway, subnet);
+/*--------------------------------------------------------------*\
+ * Start WIFI client mode (Station)
+\*--------------------------------------------------------------*/     
+bool wifiStartSTA() {
+    wifiServicesStop();
+    //Sanity check
+    if ((WiFi.getMode() == WIFI_STA) || (WiFi.getMode() == WIFI_AP_STA)) {
+        WiFi.disconnect();
+    }
+    if ((WiFi.getMode() == WIFI_AP) || (WiFi.getMode() == WIFI_AP_STA)) {
+        WiFi.softAPdisconnect();
+    }
+    WiFi.enableAP(false);
+
+    if (!configStaSSID.get() || !configStaSSID.get()[0]) {
+        DEBUG_println(FST("STA SSID is not set"));
+        return false;
     }
 
-    // Configure the hostname
+    WiFi.mode(WIFI_STA);
 
+    // Configure the hostname
     uint8_t mac[6];
     WiFi.macAddress(mac);
     snprintf(fullHostname, sizeof(fullHostname)-1, "%s-%02X%02X", HOSTNAME, mac[4], mac[5]);
     WiFi.setHostname(fullHostname);
 
-    DEBUG_printf(FST("\nConnecting '%s' to AP "), fullHostname);
-    DEBUG_printf(FST("WIFI: %s  PW: %s\n"), configSSID.get(), configPassword.get());
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(configSSID.get(), configPassword.get());   //WiFi connection
-    int n = 80;
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        if(!n--) {
-            DEBUG_println(FST("\nConnection Failed! Rebooting..."));
-            delay(5000);
-            ESP.restart();            
-        }
-        DEBUG_print(FST("."));
-        delay(250);
+    if (configIpAddr.isSet()) {
+        IPAddress ip(configIpAddr.get());
+        IPAddress mask(configSubnet.get());
+        IPAddress gateway(configGateway.get());
+        WiFi.config(ip, gateway, mask);
+    }
+    const char* pw = configStaPassword.get();
+    if (pw && !pw[0]) { pw = nullptr; }
+    if (WiFi.begin(configStaSSID.get(), pw)) {
+        DEBUG_printf(FST("\nConnecting STA WIFI: \"%s\" with hostname: %s\n"), configStaSSID.get(), fullHostname);
+        return wifiWaitForStaConnect();
+    }
+    DEBUG_println(FST("Starting WIFI STA failed"));
+    return false;
+}
+
+/*--------------------------------------------------------------*\
+ * Setup and start Access Point
+\*--------------------------------------------------------------*/     
+bool wifiStartAP() {
+    //Sanity check
+    if ((WiFi.getMode() == WIFI_STA) || (WiFi.getMode() == WIFI_AP_STA)) {
+        WiFi.disconnect();
+    }
+    if ((WiFi.getMode() == WIFI_AP) || (WiFi.getMode() == WIFI_AP_STA)) {
+        WiFi.softAPdisconnect();
     }
 
-    DEBUG_println();
+    WiFi.enableSTA(false);
+    WiFi.mode(WIFI_AP);
+
+    IPAddress ip(configApIpAddr.get());
+    IPAddress mask({255,255,255,0});
+    char ips[20];
+    configApIpAddr.toStr(ips, sizeof(ips));
+    DEBUG_printf(FST("AP SSID: \"%s\"  IP %s  password: %s  channel: %d\n"), configApSSID.get(), ips, configApPassword.get(), configApChannel.get() );
+
+    //Set static IP
+    WiFi.softAPConfig(ip, ip, mask);
+
+    //Start AP
+    const char* pw = configApPassword.get();
+    if (pw && !pw[0]) { pw = nullptr; }
+    if (WiFi.softAP(configApSSID.get(), pw, configApChannel.get())) {
+        DEBUG_println(FST("AP started"));
+        return true;
+    }
+    DEBUG_println(FST("AP did not start"));
+    return false;
+}
+
+/*--------------------------------------------------------------*\
+ * Stop WiFi
+\*--------------------------------------------------------------*/     
+void wifiReset() {
+    WiFi.persistent(false);
+    WiFi.disconnect(true);
+    WiFi.enableSTA(false);
+    WiFi.enableAP(false);
+    WiFi.mode(WIFI_OFF);
+}
+
+void wifiStop() {
+    if (WiFi.getMode() != WIFI_MODE_NULL) {
+        if ((WiFi.getMode() == WIFI_STA) || (WiFi.getMode() == WIFI_AP_STA)) {
+            WiFi.disconnect(true);
+        }
+        if ((WiFi.getMode() == WIFI_AP) || (WiFi.getMode() == WIFI_AP_STA)) {
+            WiFi.softAPdisconnect(true);
+        }
+        wifiServicesStop();
+        WiFi.enableSTA(false);
+        WiFi.enableAP(false);
+        WiFi.mode(WIFI_OFF);
+    }
+    DEBUG_println(FST("WiFi Off"));
+}
+
+/*--------------------------------------------------------------*\
+ * Start WiFi
+\*--------------------------------------------------------------*/     
+bool wifiStart() {
+    wifiServicesStop();
+    uint8_t mode = configNetworkMode.get();
+    bool isEnabled = false;
+    if (mode == 0) {
+        DEBUG_println(FST("WiFi is disabled"));
+        return false;
+    } else if (mode == 1) {
+      isEnabled = wifiStartSTA();
+    } 
+    if (mode == 2 || !isEnabled) {
+      isEnabled = wifiStartAP();
+    }
+    if (!isEnabled) { 
+      return false;
+    }
+    return wifiServicesStart();
+}
+
+/*--------------------------------------------------------------*\
+ * Start WiFi Services
+\*--------------------------------------------------------------*/     
+bool wifiServicesStart() {
     DEBUG_print(FST("WiFi connected. IP address: http://"));
-    DEBUG_println(WiFi.localIP());
+    DEBUG_println(getLocalIp());
 
 #if ENABLE_MDNS
     if (!MDNS.begin(fullHostname)) {
@@ -161,6 +292,17 @@ void networkInit() {
         1,              // Priority of the task.
         NULL);          // Task handle.
 #endif
+  return true;
+}
+
+void wifiServicesStop() {
+
+}
+
+
+
+void networkInit() {
+  wifiStart();
 }
 
 void networkRun() {
@@ -178,7 +320,7 @@ void networkRun() {
 
 }
 
-IPAddress getLocalIp() { return WiFi.localIP(); }
+IPAddress getLocalIp() { return WiFi.getMode() == WIFI_STA ? WiFi.localIP() : WiFi.softAPIP(); }
 String getWifiMac() { return WiFi.macAddress(); }
 int getRSSI() { return WiFi.RSSI(); }
 
@@ -221,29 +363,6 @@ size_t getWifiId(char* buffer, size_t bSize) {
   buffer[n] = 0;
   return n;
 }
-
-void setupWiFiAccessPoint() {
-  const char WiFiAPPSK[] PROGMEM = WIFI_ACCESS_POINT_PASSWORD; 
-  WiFi.mode(WIFI_MODE_AP);
-
-  // Do a little work to get a unique-ish name. Append the
-  // last two bytes of the MAC (HEX'd) to "Thing-":
-  char apName[64];
-  uint8_t mac[6];
-  WiFi.softAPmacAddress(mac);
-  sprintf_P(apName, FST("%s-%02X:%02X"), HOSTNAME, mac[4], mac[5]);
-  DEBUG_print(F("\n\nPlease connect to Access Point: "));
-  DEBUG_print(apName);
-  DEBUG_printf(FST("\nPassword: %s\nhttp://192.168.4.1\n"), WIFI_ACCESS_POINT_PASSWORD);
-  WiFi.softAP(apName, WiFiAPPSK);
-  WiFi.setHostname(HOSTNAME);
-}
-
-void WifiDisconnect() {
-  WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);
-}
-
 
 time_t getEpochTime() {
   time_t now = 0;
@@ -394,10 +513,10 @@ void wifiInfo(Print& s) {
                 tcpip_adapter_dhcp_status_t dhcp_status;
                 tcpip_adapter_dhcpc_get_status(TCPIP_ADAPTER_IF_STA, &dhcp_status);
                 s.print(FST("IP Mode: ")); s.println(dhcp_status == TCPIP_ADAPTER_DHCP_STARTED ? FST("DHCP") : FST("Static"));
-                s.print(FST("IP: ")); s.println(WiFi.localIP().toString());
-                s.print(FST("Gateway: ")); s.println(WiFi.gatewayIP().toString());
-                s.print(FST("Mask: ")); s.println(WiFi.subnetMask().toString());
-                s.print(FST("DNS: ")); s.println(WiFi.dnsIP().toString());
+                s.print(FST("IP: ")); s.println(getLocalIp());
+                s.print(FST("Gateway: ")); s.println(WiFi.gatewayIP());
+                s.print(FST("Mask: ")); s.println(WiFi.subnetMask());
+                s.print(FST("DNS: ")); s.println(WiFi.dnsIP());
 
             }  //this is web command so connection => no command
             s.printf(FST("Disabled Mode: AP(%s)\r\n"), WiFi.softAPmacAddress().c_str());

@@ -532,6 +532,11 @@ public:
             if (!fmt) { fmt_ = FST("%d.%d.%d.%d"); }
         }
 
+    /* ConfigIpAddr(const char* name, uint32_t deflt=0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, uint8_t* ptr=nullptr, bool (*setCb)(uint8_t* val, void* cbData)=nullptr, void (*getCb)(uint8_t* val, void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : ConfigArrayT(name, 4, (uint8_t*)&deflt, FST("IP_ADR"), info, fmt, group, ptr, setCb, getCb, cbData, flags) {
+            if (!fmt) { fmt_ = FST("%d.%d.%d.%d"); }
+        } */
+
     virtual size_t print(Print& stream) {
         get();
         return stream.printf(fmt_, value_[0], value_[1], value_[2], value_[3]);
@@ -580,17 +585,11 @@ public:
         stream->write('}'); n++;        
         return n;
     }
+
+    inline uint32_t getUInt32() { return *((uint32_t*)value_); }
+    inline bool isSet() { return getUInt32() != 0; }
 };
 
-
-
-/*
-struct ConfigData {
-  char timeFormat[16];
-  char dateFormat[16];
-  char timeZone[48];
-};
-*/
 
 #endif // _CONFIG_REG_H_
 

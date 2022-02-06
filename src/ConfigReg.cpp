@@ -157,16 +157,18 @@ bool loadConfig() {
     DEBUG_println(header.size); 
     ok = false;
   }
-  for (int i=0; i<header.size; i++) { buffer[i] = EEPROM.read(i+sizeof(ConfigHeader)); }
-  buffer[header.size] = '\0';
-  uint32_t crc = StrTool::calculateCrc(buffer, header.size);
-  if (crc != header.crc) {
-    DEBUG_printf(FST("Bad EEPROM data crc: %0X vs header crc: %0X\n"), crc, header.crc); 
-    ok = false;
-  }
   if (ok) {
-    DEBUG_println(F("Found valid EEPROM config data.")); 
-    DEBUG_println(buffer);
+    for (int i=0; i<header.size; i++) { buffer[i] = EEPROM.read(i+sizeof(ConfigHeader)); }
+    buffer[header.size] = '\0';
+    uint32_t crc = StrTool::calculateCrc(buffer, header.size);
+    if (crc != header.crc) {
+      DEBUG_printf(FST("Bad EEPROM data crc: %0X vs header crc: %0X\n"), crc, header.crc); 
+      ok = false;
+    }
+    if (ok) {
+      DEBUG_println(F("Found valid EEPROM config data.")); 
+      DEBUG_println(buffer);
+    }
   }
   EEPROM.end();
   yield();

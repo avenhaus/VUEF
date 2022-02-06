@@ -6,13 +6,21 @@
 
 void networkInit(void);
 void networkRun(void);
+
+bool wifiWaitForStaConnect();
+bool wifiStartSTA();
+bool wifiStartAP();
+bool wifiStart();
+void wifiReset();
+void wifiStop();
+bool wifiServicesStart();
+void wifiServicesStop();
+
 String getWifiMac();
 size_t getWifiId(char* buffer, size_t bSize=1<<30);
 size_t WifiGetJsonInfo(char* buffer);
 IPAddress getLocalIp();
 int getRSSI();
-void setupWiFiAccessPoint();
-void WifiDisconnect();
 void WifiSleep();
 void WifiWake();
 void getNtpTime();

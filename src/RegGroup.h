@@ -36,11 +36,12 @@ static const RFFlag RF_IS_CONFIG =     (uint8_t)(1<<0);
 static const RFFlag RF_IS_STATE =      (uint8_t)(1<<1);
 static const RFFlag RF_HIDDEN =        (uint8_t)(1<<2);
 static const RFFlag RF_NOT_PERSISTED = (uint8_t)(1<<3);
-static const RFFlag RF_PASSWORD =      (uint8_t)(1<<4);
-static const RFFlag RF_WIZARD =        (uint8_t)(1<<5);
-static const RFFlag RF_READ_ONLY =     (uint8_t)(1<<6);
+static const RFFlag RF_READ_ONLY =     (uint8_t)(1<<4);
+static const RFFlag RF_PASSWORD =      (uint8_t)(1<<5);
+static const RFFlag RF_WIZARD =        (uint8_t)(1<<6);
+static const RFFlag RF_CONTROL_UI =    (uint8_t)(1<<7);
 
-static const uint16_t RF_SHOW_PASSWORD = (uint16_t)(1<<16);
+static const uint32_t RF_SHOW_PASSWORD = (uint32_t)(1<<16);
 
 /*
 const char WUI_CATEGORY[] PROGMEM = "C";
