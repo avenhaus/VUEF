@@ -138,6 +138,7 @@ public:
     size_t toJsonStr(char* buffer, size_t size, bool noName=false, uint32_t flags=0, RFFlag flagsMask=0);
     size_t toJson(Print* stream, bool noName=false, uint32_t flags=0, RFFlag flagsMask=0);
     size_t getWebUi(Print* stream, bool noName=false, uint32_t flags=0, RFFlag flagsMask=0);
+    size_t getVarCount(uint32_t flags=0, RFFlag flagsMask=0);
     bool setFromJson(const JsonObject& obj);
     void setDefaults();
     inline const char* name() { return name_; }

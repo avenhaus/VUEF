@@ -22,6 +22,9 @@
 RegGroup* RegGroup::mainGroup = nullptr;
 size_t RegVar::count_ = 0;
 
+bool isConfigOk = false;
+
+
 /************************************************************************\
 |* Config Commands
 \************************************************************************/
@@ -36,8 +39,13 @@ Command cmdBasicConfig(FST("basics"),
     #else
       #define SPIFFS_LOC "No SD"
     #endif // ENABLE_SPIFFS
-    stream->printf(FST("FW name: %s # FW version: %s # primary sd:" SPIFFS_LOC " # secondary sd:No SD # authentication:no # webcommunication: Sync: /ws # hostname:%s # tabs: " WEBUI_TABS " # start: " WEBUI_START_TAB "\n"),
+    stream->printf(FST("FW name: %s # FW version: %s # primary sd:" SPIFFS_LOC " # secondary sd:No SD # authentication:no # webcommunication: Sync: /ws # hostname:%s # tabs: " WEBUI_TABS " # start: "),
     PROJECT_NAME, PROJECT_VERSION, fullHostname);
+    const char* startTab = FST(WEBUI_START_TAB);
+    #if ENABLE_WEB_UI_WIZARD
+      if (!isConfigOk) { startTab = FST("wizard"); }
+    #endif
+    stream->println(startTab);
     return EC_OK;
 },
 FST("Get basic configuration"), &cmdRegConfig
@@ -112,6 +120,30 @@ nullptr, CT_APP_JSON
 );
 
 
+#if ENABLE_WEB_UI_WIZARD 
+Command cmdGetWizardUi(FST("wizard-ui"), 
+[] (const char* args, Print* stream) {
+    RegGroup::mainGroup->getWebUi(stream, true, RF_IS_CONFIG | RF_WIZARD, RF_IS_CONFIG | RF_WIZARD);
+    stream->println();
+    return EC_OK;
+},
+FST("Get wizard UI as JSON"), &cmdRegConfig,
+nullptr, CT_APP_JSON
+);
+#endif // ENABLE_WEB_UI_WIZARD 
+
+
+Command cmdGetControlUi(FST("control-ui"), 
+[] (const char* args, Print* stream) {
+    RegGroup::mainGroup->getWebUi(stream, true, RF_CONTROL_UI, RF_CONTROL_UI);
+    stream->println();
+    return EC_OK;
+},
+FST("Get control UI as JSON"), &cmdRegConfig,
+nullptr, CT_APP_JSON
+);
+
+
 /************************************************************************\
 |* Global Functions
 \************************************************************************/
@@ -173,6 +205,7 @@ bool loadConfig() {
   EEPROM.end();
   yield();
   if (ok) { ok |= !parseConfigJson(buffer); }
+  isConfigOk = ok;
   return ok;
 }
 
@@ -253,8 +286,10 @@ size_t RegGroup::getWebUi(Print* stream, bool noName, uint32_t flags/*=0*/, RFFl
     char buffer[128];
     size_t size = sizeof(buffer);
     size_t n = 0;
-    if (!noName) { n += StrTool::toJsonName(buffer, size, name_); }
-    stream->write(buffer, n);
+    if (!noName) { 
+      n += StrTool::toJsonName(buffer, size, name_); 
+      stream->write(buffer, n);
+    }
     n += stream->print(FST("{\"_INFO_\":{"));
     n += stream->printf(FST("\"L\":\"%s\""), name_);
     if (info_) {n += stream->printf(FST(",\"H\":\"%s\""), info_); }
@@ -271,7 +306,7 @@ size_t RegGroup::getWebUi(Print* stream, bool noName, uint32_t flags/*=0*/, RFFl
     }
     stream->write(']'); n++;
     for(auto g: children_) {
-      if (!((g->flags() ^ flags) & flagsMask)) {
+      if (!((g->flags() ^ flags) & (flagsMask & (RF_IS_CONFIG | RF_IS_STATE))) && g->getVarCount(flags, flagsMask)) {
         { stream->write(','); n++; }
         first = false; 
         n += g->getWebUi(stream, false, flags, flagsMask);
@@ -280,6 +315,20 @@ size_t RegGroup::getWebUi(Print* stream, bool noName, uint32_t flags/*=0*/, RFFl
     stream->write('}'); n++;
     return n;
 }
+
+size_t RegGroup::getVarCount(uint32_t flags/*=0*/, RFFlag flagsMask/*=0*/) {
+    size_t n = 0;
+    for(auto v: vars_) {
+      if (!v->isHidden() && !((v->flags() ^ flags) & flagsMask) ) { n++; }
+    }
+    for(auto g: children_) {
+      if (!((g->flags() ^ flags) & (flagsMask & (RF_IS_CONFIG | RF_IS_STATE)))) {
+        n += g->getVarCount(flags, flagsMask);
+      }
+    }
+    return n;
+}
+
 
 RegGroup* RegGroup::findChild(const char* name) {
     for(auto g: children_) {

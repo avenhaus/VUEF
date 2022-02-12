@@ -164,7 +164,6 @@ Command cmdStats(FST("stats"),
     stream->printf(FST("SPIFFS Used: %s (%d%%)\r\n"), buffer, 100 * usedBytes / totalBytes);
 #endif // ENABLE_SPIFFS
     wifiInfo(*stream);
-    stream->printf(FST(" TODO: SD\r\n"));
     uint32_t baud = 0;
     uart_get_baudrate(UART_NUM_0, &baud);
     stream->printf(FST("Baud rate: %d\r\n"), (baud / 100) * 100);

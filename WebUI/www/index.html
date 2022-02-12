@@ -40,20 +40,26 @@
                 </td>
                 <td style='padding:10px' class="tooltip">
                     <span class="tooltip-text">Update the firmware wirelessly (OTA)</span> 
-                    <button id="settings_update_fw_btn" type="button" class="btn btn-warning" onclick="firmwareUpdateTab();">
+                    <button id="update_fw_btn" type="button" class="btn btn-warning" onclick="firmwareUpdateTab();">
                         <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-cloud-download" /> </svg>
                     </button>
                 </td>
                 <td style='padding:10px' class="tooltip">
                     <span class="tooltip-text">Restart ESP32</span> 
-                    <button type="button" id="settings_restart_btn" class="btn btn-danger" onclick="restart_esp();">
+                    <button type="button" id="restart_btn" class="btn btn-danger" onclick="restart_esp();">
                         <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-power-button" /> </svg>
                     </button>
                 </td>
                 <td style='padding:10px' class="tooltip">
                     <span class="tooltip-text">Show system status</span> 
-                    <button type="button" id="settings_refresh_btn" class="btn btn-primary" onclick="statusdlg();">
+                    <button type="button" id="system_status_btn" class="btn btn-primary" onclick="statusdlg();">
                         <svg width='1.3em' height='1.2em' version="2.0"> <use href="#icon-question-sign" /> </svg>
+                    </button>
+                </td>
+                <td style='padding:10px; display:none;' class="tooltip" id="wizard-button">
+                    <span class="tooltip-text">Configuration Wizard</span> 
+                    <button type="button" id="wizard_btn" class="btn btn-control" onclick="wizardTab();">
+                        &#129497;
                     </button>
                 </td>
             </tr>

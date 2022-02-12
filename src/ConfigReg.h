@@ -42,6 +42,8 @@ bool loadConfig();
 void defaultConfig();
 bool parseConfigJson(char* jsonStr);
 
+extern bool isConfigOk;
+
 
 /************************************************************************\
 |* EEPROM Config Header

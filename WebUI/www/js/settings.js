@@ -16,12 +16,26 @@ var settings_ui = {
 
 var setup_is_done = false;
 var EP_STA_SSID = "WIFI.SSID";
+var wizard_mode = false;
+var RF_PASSWORD = (1<<5);
+var RF_WIZARD = (1<<6);
 
+function wizardTab() {
+    console.log("Wizard")
+    wizard_mode = true;
+    document.getElementById('settings_tab_title').innerHTML = "&#129497; Wizard"
+    opentab('settingstab', 'mainuitabscontent', 'mainuitablinks'); 
+    setup_is_done = true;
+    refreshSettings();
+}
 
 function settingsTab() {
     console.log("SettingsTab")
+    wizard_mode = false;
+    document.getElementById('settings_tab_title').innerHTML = "Settings"
     opentab('settingstab', 'mainuitabscontent', 'mainuitablinks'); 
     setup_is_done = true;
+    refreshSettings();
 }
 
 function saveConfig() {
@@ -62,7 +76,7 @@ function refreshSettings() {
     getESPsettingsSuccess(response_text);
     return;
     //endRemoveIf(production)
-    var url = "/command?plain=" + encodeURIComponent("config.ui");
+    var url = "/command?plain=" + encodeURIComponent(wizard_mode ? "config.wizard-ui" : "config.ui");
     SendGetHttp(url, getESPsettingsSuccess, getESPsettingsfailed)
 }
 
@@ -207,6 +221,7 @@ function build_HTML_setting_list(docElement, uicfg) {
                 content += " class='tooltip'><span class='tooltip-text'>" + sentry.help + " </span";
             }
             content += ">" + sentry.label;
+            if (!wizard_mode && sentry.flags & RF_WIZARD) { content += "<span style='color:orange;'>&#9733;</span>"; }
             content += "</td>";
             content += "<td style='vertical-align:middle'>";
             content += "<table><tr><td>" + build_setting_from_index(uicfg, i) + "</td></tr></table>";

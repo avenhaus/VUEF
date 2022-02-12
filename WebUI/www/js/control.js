@@ -35,7 +35,7 @@ function getControlUI() {
     getESPcontrolSuccess(response_text);
     return;
     //endRemoveIf(production)
-    var url = "/command?plain=" + encodeURIComponent("state.ui");
+    var url = "/command?plain=" + encodeURIComponent("config.control-ui");
     SendGetHttp(url, getESPcontrolSuccess, getESPcontrolfailed)
 }
 
@@ -79,7 +79,6 @@ function build_state_from_index(sentry) {
     content = "<div class='item-flex-row'>";
     content += "<span id='state_" + sentry.pname.replace(".", "_") + "' class='bgtrans'>" + sentry.defaultvalue + "</span>";
     content += "</div>";
-    console.log(content);
     return content;
 }
 

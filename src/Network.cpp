@@ -16,7 +16,6 @@
   #include "Secret.h"
 #endif
 
-
 #ifndef WIFI_STA_SSID
 #define WIFI_STA_SSID "Best WIFI"
 #endif
@@ -95,9 +94,11 @@ bool wifiWaitForStaConnect() {
         switch (WiFi.status()) {
             case WL_NO_SSID_AVAIL:
                 DEBUG_println(FST("\nNo SSID"));
+                isConfigOk = false;
                 return false;
             case WL_CONNECT_FAILED:
                 DEBUG_println(FST("\nConnection failed"));
+                isConfigOk = false;
                 return false;
             case WL_CONNECTED:
                 DEBUG_print(FST("\nConnected - Local IP: "));
@@ -112,6 +113,7 @@ bool wifiWaitForStaConnect() {
         delay(100);
     }
     DEBUG_println(FST("\nTimed out connecting WIFI"));
+    isConfigOk = false;
     return false;
 }
 

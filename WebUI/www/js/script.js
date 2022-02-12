@@ -62,7 +62,9 @@ function FWError(){
 
 function FWOk() {
     //document.getElementById('MSG').innerHTML = "Connected";
-    settingsTab();
+    if (start_tab == "wizard") { wizardTab(); }
+    else if (start_tab == "control") { controlTab(); }
+    else { settingsTab(); }
     if (spiffs_path) { SendCommand('list',''); }
 }
 
@@ -147,6 +149,7 @@ xmlhttp.onreadystatechange = function() {
                 if (ui_tabs.includes("control")) { document.getElementById("control-button").style.display = "table-cell"; }
                 if (ui_tabs.includes("settings")) { document.getElementById("settings-button").style.display = "table-cell"; }
                 if (ui_tabs.includes("files") && spiffs_path) { document.getElementById("spiffs-button").style.display = "table-cell"; }
+                if (ui_tabs.includes("wizard")) { document.getElementById("wizard-button").style.display = "table-cell"; }
                 nbitem++
               }
               else if (sublist[0].trim() == "start") {
@@ -185,7 +188,6 @@ xmlhttp.onreadystatechange = function() {
     //endRemoveIf(production)
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
-    refreshSettings();
 }
 
 var wsmsg = "";

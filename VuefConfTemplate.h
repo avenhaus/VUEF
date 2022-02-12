@@ -24,6 +24,7 @@
 #define ENABLE_WEB_SERVER 1
 #define WEBUI_TABS "control,settings,files,wizard"
 #define WEBUI_START_TAB "settings"
+#define ENABLE_WEB_UI_WIZARD 1
 #define ENABLE_EMBEDDED_WEB_UI 1
 #define ENABLE_SPIFFS_WEB_UI 1
 #define ENABLE_SPIFFS_WEB_CONTENT 0
