@@ -36,7 +36,13 @@
 
 RegGroup configGroupNetwork(FST("Network"), nullptr, FST("Network Settings"));
 
-ConfigUInt8 configNetworkMode(FST("WIFI Mode"), 1, FST("Off/STA/AP"), 0, &configGroupNetwork);
+const ConfigEnum::Option configWifiModeOptions[] PROGMEM = {
+  { "Off", 0 },
+  { "Station", 1 },
+  { "Access Point", 2 }
+};
+const size_t configWifiModeOptionsSize = sizeof(configWifiModeOptions) / sizeof(ConfigEnum::Option);
+ConfigEnum configNetworkMode(FST("WIFI Mode"), configWifiModeOptions, configWifiModeOptionsSize, 1, FST("Off/STA/AP"), 0, &configGroupNetwork);
 
 ConfigStr configStaSSID(FST("SSID"), 36, WIFI_STA_SSID, FST("Name of WIFI network"), 0, &configGroupNetwork, 0,0,0,0, RF_WIZARD);
 ConfigStr configStaPassword(FST("Password"), 64, WIFI_STA_PASSWORD, FST("Password for WIFI network"), 0, &configGroupNetwork, 0,0,0,0, RF_PASSWORD | RF_WIZARD);

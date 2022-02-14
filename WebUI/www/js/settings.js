@@ -124,19 +124,18 @@ function build_setting_from_index(uicfg, index, extra_set_function) {
     var content = "<table>";
     if (i < uicfg.elements.length) {
         var nbsub = 1;
-        if (uicfg.elements[i].type == "bool--") {
+        /* if (uicfg.elements[i].type == "bool--" && uicfg.elements[i].options) {
             nbsub = uicfg.elements[i].options.length;
-        }
+        } */
         for (var sub_element = 0; sub_element < nbsub; sub_element++) {
             if (sub_element > 0) {
                 content += "<tr><td style='height:10px;'></td></tr>";
             }
             content += "<tr><td style='vertical-align: middle;'>";
-            if (uicfg.elements[i].type == "bool--") {
+            /* if (uicfg.elements[i].type == "bool--") {
                 content += uicfg.elements[i].options[sub_element].display;
                 content += "</td><td>&nbsp;</td><td>";
-            }
-
+            } */
             content += "<div id='status_setting_" + i + "_" + sub_element + "' class='form-group has-feedback' style='margin: auto;'>";
             content += "<div class='item-flex-row'>";
             content += "<table><tr><td>";
@@ -155,11 +154,11 @@ function build_setting_from_index(uicfg, index, extra_set_function) {
             if (uicfg.elements[i].type == "bool--") {
                 //console.log(uicfg.elements[i].label + " " + uicfg.elements[i].type);
                 //console.log(uicfg.elements[i].options.length);
-                content += build_select_flag_for_setting_list(i, sub_element);
+                content += build_select_flag_for_setting_list(uicfg, i, sub_element);
             }
             //drop list
             else if (uicfg.elements[i].options.length > 0) {
-                content += build_select_for_setting_list(i, sub_element);
+                content += build_select_for_setting_list(uicfg, i, sub_element);
             }
             //text
             else {
@@ -398,14 +397,13 @@ function create_setting_entry(uicfg, gpath, sentry) {
     }
     //list possible options if defined
     if (typeof sentry.O !== 'undefined') {
-        console.log("options: " + sentry.O);
         for (var i in sentry.O) {
             var key = i;
             var val = sentry.O[i];
             for (var j in val) {
                 var sub_key = j;
                 var sub_val = val[j];
-                sub_val = sub_val.trim();
+                sub_val = sub_val;
                 sub_key = sub_key.trim();
                 var option = {
                     id: sub_val,

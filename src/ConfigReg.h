@@ -202,12 +202,69 @@ public:
 };
 
 /*----------------------------------------------------------------------*\
- * Unsigned Int16
+ * Unsigned Int8
 \*----------------------------------------------------------------------*/
 class ConfigUInt8 : public ConfigVarT<uint8_t> {
 public:
     ConfigUInt8(const char* name, uint8_t deflt=0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, uint8_t* ptr=nullptr, bool (*setCb)(uint8_t val, void* cbData)=nullptr, uint8_t (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
         : ConfigVarT(name, deflt, FST("uint8"), info, fmt, group, ptr, setCb, getCb, cbData, flags) {}
+};
+
+
+/*----------------------------------------------------------------------*\
+ * Enum
+\*----------------------------------------------------------------------*/
+class ConfigEnum : public ConfigVarT<int> {
+public:
+    typedef struct Option { const char* text; int value; } Option;
+    ConfigEnum(const char* name, const Option* map, size_t mapSize, int deflt=0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, int* ptr=nullptr, bool (*setCb)(int val, void* cbData)=nullptr, int (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : ConfigVarT(name, deflt, FST("enum"), info, fmt, group, ptr, setCb, getCb, cbData, flags), map_(map), mapSize_(mapSize) {}
+
+    virtual bool set(int val) {
+        if (getIndex_(val) != ~0) { return ConfigVarT::set(val); }
+        DEBUG_printf(FST("ConfigEnum %s invalid value: %d\n"), name_, val);
+        return true;
+    }
+
+    virtual size_t getWebUi(Print* stream, uint32_t flags=0, RFFlag flagsMask=0) {
+        if ((flags_ ^ flags) & flagsMask) { return 0; }
+        size_t n = getWebUiCommon_(stream);
+        get();
+        n += stream->print(FST(",\"V\":"));
+        n += stream->print(value_);
+        n += stream->print(FST(",\"O\":["));
+        for (size_t i=0; i<mapSize_; i++) {
+            if (i) { stream->write(','); n++; }
+            n += stream->printf(FST("{\"%s\":"), map_[i].text);
+            n += stream->print(map_[i].value);
+            stream->write('}'); n++;
+        }
+        stream->write(']'); n++;
+        stream->write('}'); n++;
+        return n;
+    }
+
+    virtual const char* getText() {
+        get();
+        if (getIndex_(value_) != ~0) { return map_[index_].text; }
+        DEBUG_printf(FST("ConfigEnum %s invalid value: %d\n"), name_, value_);
+        return FST("???");
+    }
+
+protected:
+    size_t getIndex_(int val) {
+        for (size_t i=0; i<mapSize_; i++) {
+            if (val == map_[i].value) { 
+                index_ = i;
+                return index_;
+            }
+        }
+        return ~0;
+    }
+
+    size_t index_;
+    const Option* map_;
+    const size_t mapSize_;
 };
 
 
