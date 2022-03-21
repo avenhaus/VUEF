@@ -52,7 +52,7 @@ ConfigIpAddr configIpAddr(FST("IP"), 0, FST("Fixed IP address of this device"), 
 ConfigIpAddr configGateway(FST("Gateway"), 0, FST("Gateway IP address"), 0, &configGroupNetwork);
 ConfigIpAddr configSubnet(FST("Subnet"), 0, FST("Subnet mask"), 0, &configGroupNetwork);
 ConfigIpAddr configDNS(FST("DNS"), 0, FST("Domain Name Server"), 0, &configGroupNetwork);
-const uint8_t AP_IP_ADR[4] PROGMEM = {192, 168, 0, 1};
+const uint8_t AP_IP_ADR[4] PROGMEM = {192, 168, 0, 4};
 ConfigIpAddr configApIpAddr(FST("AP IP"), AP_IP_ADR, FST("IP address of this device in Access Point mode"), 0, &configGroupNetwork);
 ConfigStr configApSSID(FST("AP SSID"), 36, WIFI_AP_SSID, FST("Name of WIFI network in Access Point mode"), 0, &configGroupNetwork);
 ConfigStr configApPassword(FST("AP Password"), 64, WIFI_AP_PASSWORD, FST("Password for WIFI network in Access Point mode"), 0, &configGroupNetwork);

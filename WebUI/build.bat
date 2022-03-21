@@ -15,7 +15,7 @@ cat footer.txt >> out.h
 sed -i "s/unsigned int index_html_gz_len/const size_t INDEX_HTML_GZ_SIZE/g" ./out.h
 sed -i "s/unsigned char index_html_gz/const uint8_t INDEX_HTML_GZ/g" ./out.h
 sed -i "s/] = {/] PROGMEM = {/g" ./out.h
-mv ./out.h ../include/WebUi.h
+mv ./out.h ../src/WebUi.h
 rm WebUI.h
 :: move /y index.html.gz ../data/index.html.gz
 

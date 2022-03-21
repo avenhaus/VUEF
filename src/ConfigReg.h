@@ -156,6 +156,31 @@ public:
     }
 };
 
+
+/*----------------------------------------------------------------------*\
+ * Double
+\*----------------------------------------------------------------------*/
+class ConfigDouble : public ConfigVarT<double> {
+public:
+    ConfigDouble(const char* name, double deflt=0.0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, double* ptr=nullptr, bool (*setCb)(double val, void* cbData)=nullptr, double (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : ConfigVarT(name, deflt, FST("double"), info, fmt, group, ptr, setCb, getCb, cbData, flags) {
+            if (!fmt) { fmt_ = FST("%f"); }
+    }
+};
+
+
+/*----------------------------------------------------------------------*\
+ * Float
+\*----------------------------------------------------------------------*/
+class ConfigFloat : public ConfigVarT<float> {
+public:
+    ConfigFloat(const char* name, float deflt=0.0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, float* ptr=nullptr, bool (*setCb)(float val, void* cbData)=nullptr, float (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : ConfigVarT(name, deflt, FST("float"), info, fmt, group, ptr, setCb, getCb, cbData, flags) {
+            if (!fmt) { fmt_ = FST("%f"); }
+    }
+};
+
+
 /*----------------------------------------------------------------------*\
  * Int32
 \*----------------------------------------------------------------------*/

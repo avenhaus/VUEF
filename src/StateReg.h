@@ -156,6 +156,30 @@ public:
 };
 
 /*----------------------------------------------------------------------*\
+ * Double
+\*----------------------------------------------------------------------*/
+class StateDouble : public StateVarT<double> {
+public:
+    StateDouble(const char* name, double value=0.0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, double* ptr=nullptr, double (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : StateVarT(name, value, FST("double"), info, fmt, group, ptr, getCb, cbData, flags) {
+            if (!fmt) { fmt_ = FST("%f"); }
+    }
+};
+
+
+/*----------------------------------------------------------------------*\
+ * Float
+\*----------------------------------------------------------------------*/
+class StateFloat : public StateVarT<float> {
+public:
+    StateFloat(const char* name, float value=0.0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, float* ptr=nullptr, float (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : StateVarT(name, value, FST("float"), info, fmt, group, ptr, getCb, cbData, flags) {
+            if (!fmt) { fmt_ = FST("%f"); }
+    }
+};
+
+
+/*----------------------------------------------------------------------*\
  * Int32
 \*----------------------------------------------------------------------*/
 class StateInt32 : public StateVarT<int32_t> {
