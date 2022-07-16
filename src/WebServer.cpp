@@ -2,6 +2,7 @@
 #include <SPIFFS.h>
 
 #include "VUEF.h"
+#if ENABLE_WIFI
 #include "WebServer.h"
 #include "Command.h"
 #include "StateReg.h"
@@ -647,3 +648,5 @@ void Web_Server::SPIFFSFileupload() {
     COMMANDS::wait(0);
 }
 */
+#endif //ENABLE_WIFI
+

@@ -3,6 +3,7 @@
  */
 
 #include "VUEF.h"
+#if ENABLE_WIFI
 #include "TcpServer.h"
 
 #include <string.h>
@@ -83,3 +84,4 @@ void TcpConnection::flush() {
   if (!isConnected()) { return; }    
   connection.flush();
 }
+#endif // ENABLE_WIFI

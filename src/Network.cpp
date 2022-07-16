@@ -5,6 +5,7 @@
 #include <sys/time.h>
 
 #include "VUEF.h"
+#if ENABLE_WIFI
 #include "Helper.h"
 #include "ConfigReg.h"
 #include "Command.h"
@@ -595,4 +596,4 @@ void wifiInfo(Print& s) {
     }
     s.println();
 }
-
+#endif // ENABLE_WIFI

@@ -3,6 +3,7 @@
 #include <ArduinoOTA.h>
 
 #include "VUEF.h"
+#if ENABLE_WIFI
 
 void otaInit(const char* hostname) {
 
@@ -47,3 +48,4 @@ void otaInit(const char* hostname) {
     DEBUG_printf(FST("OTA initialized. Hostname: '%s' IP address: "), hostname);
     DEBUG_println(getLocalIp());
 }
+#endif // ENABLE_WIFI

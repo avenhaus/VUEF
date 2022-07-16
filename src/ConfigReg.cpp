@@ -39,8 +39,13 @@ Command cmdBasicConfig(FST("basics"),
     #else
       #define SPIFFS_LOC "No SD"
     #endif // ENABLE_SPIFFS
+    #if ENABLE_WIFI
     stream->printf(FST("FW name: %s # FW version: %s # primary sd:" SPIFFS_LOC " # secondary sd:No SD # authentication:no # webcommunication: Sync: /ws # hostname:%s # tabs: " WEBUI_TABS " # start: "),
     PROJECT_NAME, PROJECT_VERSION, fullHostname);
+    #else
+    stream->printf(FST("FW name: %s # FW version: %s # primary sd:" SPIFFS_LOC " # secondary sd:No SD # authentication:no # webcommunication: Sync: /ws # tabs: " WEBUI_TABS " # start: "),
+    PROJECT_NAME, PROJECT_VERSION);
+    #endif
     const char* startTab = FST(WEBUI_START_TAB);
     #if ENABLE_WEB_UI_WIZARD
       if (!isConfigOk) { startTab = FST("wizard"); }

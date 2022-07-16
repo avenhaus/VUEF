@@ -11,6 +11,10 @@
 #include "Command.h"
 #include "Helper.h"
 
+#if !ENABLE_WIFI || !ENABLE_WEB_SERVER
+const char CT_TEXT_PLAIN[] PROGMEM = "text/plain";
+const char CT_APP_JSON[] PROGMEM = "application/json";
+#endif
 
 CommandRegistry* CommandRegistry::mainCmdReg = nullptr;
 
@@ -145,7 +149,7 @@ Command cmdStats(FST("stats"),
     stream->printf(FST("Free memory: %s\r\n"), buffer);
     StrTool::formatDurationUs(buffer, sizeof(buffer), esp_timer_get_time());
     stream->printf(FST("Up Time: %s\r\n"), buffer);
-    #if ENABLE_NTP
+    #if ENABLE_NTP && ENABLE_WIFI
     char fmt[48];
     size_t n = snprintf(fmt, sizeof(fmt)-1, FST("%s | %s"), configTimeFormat.get(), configDateFormat.get());
     fmt[n] = '\0';
@@ -163,7 +167,9 @@ Command cmdStats(FST("stats"),
     StrTool::formatBytes(buffer, sizeof(buffer), usedBytes);
     stream->printf(FST("SPIFFS Used: %s (%d%%)\r\n"), buffer, 100 * usedBytes / totalBytes);
 #endif // ENABLE_SPIFFS
+#if ENABLE_WIFI
     wifiInfo(*stream);
+#endif
     uint32_t baud = 0;
     uart_get_baudrate(UART_NUM_0, &baud);
     stream->printf(FST("Baud rate: %d\r\n"), (baud / 100) * 100);

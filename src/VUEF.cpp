@@ -22,7 +22,8 @@ void vuefInit() {
 
   loadConfig();
 
-  #if  ENABLE_WEB_SERVER
+  #if ENABLE_WIFI
+  #if ENABLE_WEB_SERVER
   if(!SPIFFS.begin(true)){
     DEBUG_println(FST("An Error has occurred while mounting SPIFFS"));
     return;
@@ -30,15 +31,18 @@ void vuefInit() {
   #endif
 
   networkInit();
+  #endif // ENABLE_WIFI
 }
 
 
 void vuefRun(uint32_t now/*=0*/) {
   if (now == 0) { now = millis(); }
 
+#if ENABLE_WIFI
 #if !USE_NETWORK_TASK
   networkRun();
 #endif
+#endif // ENABLE_WIFI
 
 #if ENABLE_STATE_REG
   stateRegRun(now);

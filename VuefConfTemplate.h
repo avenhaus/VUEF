@@ -19,6 +19,7 @@
 
 #define COMMAND_BUFFER_SIZE 64
 
+#define ENABLE_WIFI 1
 #define ENABLE_OTA 1
 #define ENABLE_TELNET 1
 #define ENABLE_WEB_SERVER 1
