@@ -301,7 +301,7 @@ void WebServer::begin() {
 
  /*
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, FST("/index.html"), FST(""), false);
+    request->send(SPIFFS, FST("/index.html"), EMPTY_STRING, false);
   });
   */
 

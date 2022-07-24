@@ -147,8 +147,8 @@ public:
 
   Command(const char* name, CmdFct fct, const char* info=nullptr, CommandRegistry* reg=nullptr, const char* inputHelp=nullptr, const char* contentType=nullptr, uint8_t flags=0)
     : name_(name), fct_(fct), info_(info), reg_(reg), inputHelp_(inputHelp), contentType_(contentType), flags_(flags) {
-        if (!info_) { info_ = FST(""); }
-        if (!inputHelp_) { inputHelp_ = FST(""); }
+        if (!info_) { info_ = EMPTY_STRING; }
+        if (!inputHelp_) { inputHelp_ = EMPTY_STRING; }
         if (!contentType_) { contentType_ = CT_TEXT_PLAIN; }
         if (!reg_) { 
             CommandRegistry::checkMain();

@@ -41,7 +41,7 @@ void ReadSerial() {
 const char* CommandLineInterpreter::execute(const char* cmd) {
   error = nullptr;
   size_t n = 0; 
-  if (*cmd == '#') { return FST(""); } // Comment line
+  if (*cmd == '#') { return EMPTY_STRING; } // Comment line
   if ((n = StrTool::tryRead(FST("HELP"), cmd))) { return help(); }
   if ((n = StrTool::tryRead(FST("?"), cmd))) { return help(); }
 
@@ -65,7 +65,7 @@ const char* CommandLineInterpreter::execute(const char* cmd) {
     while (*cmd && *cmd != ' ') { cmd++; };
     while (*cmd == ' ') { cmd++; }
     ErrorCode err = sCmd->execute(cmd, stream);
-    if (err) { return FST(""); }
+    if (err) { return EMPTY_STRING; }
     return OK_TEXT;
   }
 

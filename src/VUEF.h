@@ -4,6 +4,13 @@
 #include <Arduino.h>
 #include "VuefConfInt.h"
 
+/* ============================================== *\
+ * Constants
+\* ============================================== */
+
+extern const char* EMPTY_STRING;
+extern const char* NEW_LINE;
+
 extern const char HOSTNAME[] PROGMEM;
 extern const char PROJECT_NAME[] PROGMEM;
 extern const char PROJECT_VERSION[] PROGMEM;

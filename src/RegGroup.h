@@ -210,7 +210,7 @@ public:
   RegVar(const char* name, const char* typeHelp=nullptr, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, RFFlag flags=0)
     : name_(name), fmt_(fmt), typeHelp_(typeHelp), info_(info), group_(group), flags_(flags), id_(count_++) {
         if (!typeHelp_) { typeHelp_ = FST("value"); }
-        if (!info_) { info_ = FST(""); }
+        if (!info_) { info_ = EMPTY_STRING; }
         if (!group_) { 
             RegGroup::checkMain();
             group_ = RegGroup::mainGroup; 

@@ -376,7 +376,7 @@ ErrorCode spiffsFilesJson(const char* path, Print& s, const char* status/*=nullp
             }
         } else {
             //do not add "." file
-            if (!((filename == FST(".")) || (filename == FST("")))) {
+            if (!((filename == FST(".")) || (filename == EMPTY_STRING))) {
                 StrTool::formatBytes(buffer, sizeof(buffer), currentFile.size());
             } else {
                 isVisible = false;

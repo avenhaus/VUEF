@@ -4,11 +4,14 @@
 #include "StateReg.h"
 
 
-const char HOSTNAME[] PROGMEM = __HOSTNAME__;
-const char PROJECT_NAME[] PROGMEM = __PROJECT_NAME__;
-const char PROJECT_VERSION[] PROGMEM = __PROJECT_COMPILE__;
-const char COMPILE_DATE[] PROGMEM = __DATE__;
-const char COMPILE_TIME[] PROGMEM = __TIME__;
+PROGMEM const char* EMPTY_STRING =  "";
+PROGMEM const char* NEW_LINE =  "\n";
+
+PROGMEM const char HOSTNAME[] = __HOSTNAME__;
+PROGMEM const char PROJECT_NAME[] = __PROJECT_NAME__;
+PROGMEM const char PROJECT_VERSION[] = __PROJECT_COMPILE__;
+PROGMEM const char COMPILE_DATE[] = __DATE__;
+PROGMEM const char COMPILE_TIME[] = __TIME__;
 
 Print* debugStream = &Serial;
 
