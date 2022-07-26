@@ -29,6 +29,7 @@ bool isConfigOk = false;
 |* Config Commands
 \************************************************************************/
 
+#if ENABLE_CLI
 CommandRegistry cmdRegConfig(FST("config"));
 
 extern char fullHostname[];
@@ -124,7 +125,6 @@ FST("Get configuration UI as JSON"), &cmdRegConfig,
 nullptr, CT_APP_JSON
 );
 
-
 #if ENABLE_WEB_UI_WIZARD 
 Command cmdGetWizardUi(FST("wizard-ui"), 
 [] (const char* args, Print* stream) {
@@ -137,7 +137,6 @@ nullptr, CT_APP_JSON
 );
 #endif // ENABLE_WEB_UI_WIZARD 
 
-
 Command cmdGetControlUi(FST("control-ui"), 
 [] (const char* args, Print* stream) {
     RegGroup::mainGroup->getWebUi(stream, true, RF_CONTROL_UI, RF_CONTROL_UI);
@@ -148,6 +147,7 @@ FST("Get control UI as JSON"), &cmdRegConfig,
 nullptr, CT_APP_JSON
 );
 
+#endif // ENABLE_CLI
 
 /************************************************************************\
 |* Global Functions

@@ -18,7 +18,7 @@
 |* Config Commands
 \************************************************************************/
 
-
+#if ENABLE_CLI
 CommandRegistry cmdRegState(FST("state"));
 const char NO_STATE_VARS[] PROGMEM = "No state variables defined";
 
@@ -59,6 +59,8 @@ Command cmdGetStateUi(FST("ui"),
 FST("Get state UI as JSON"), &cmdRegState,
 nullptr, CT_APP_JSON
 );
+
+#endif // ENABLE_CLI
 
 
 /************************************************************************\

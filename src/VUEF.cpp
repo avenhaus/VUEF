@@ -4,8 +4,8 @@
 #include "StateReg.h"
 
 
-PROGMEM const char* EMPTY_STRING =  "";
-PROGMEM const char* NEW_LINE =  "\n";
+PROGMEM const char EMPTY_STRING[] =  "";
+PROGMEM const char NEW_LINE[] =  "\n";
 
 PROGMEM const char HOSTNAME[] = __HOSTNAME__;
 PROGMEM const char PROJECT_NAME[] = __PROJECT_NAME__;

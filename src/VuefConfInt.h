@@ -17,4 +17,8 @@
 #define ENABLE_WIFI 1
 #endif
 
+#ifndef ENABLE_CLI
+#define ENABLE_CLI 1
+#endif 
+
 #endif // VUEF_CONF_INT_H

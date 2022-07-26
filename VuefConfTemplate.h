@@ -32,6 +32,7 @@
 #define ENABLE_MDNS 1
 #define ENABLE_NTP 1
 #define ENABLE_SPIFFS 1
+#define ENABLE_CLI 1
 
 #define ENABLE_STATE_REG 1
 #define ENABLE_WS_STATE_MONITOR 1

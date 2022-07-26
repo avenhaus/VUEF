@@ -67,7 +67,7 @@ ConfigStr configDateFormat(FST("Date Format"), 16, DATE_FORMAT, FST("Format stri
 
 // StateStr stateWifiConnection(FST("Connection"), FST("Not connected"), FST("WIFI connection state"), 0, &configGroupNetwork);
 
-
+#if ENABLE_CLI
 Command cmdListNetorksJson(FST("networks"), 
 [] (const char* args, Print* stream) {
   if (!stream) { return EC_OK; }
@@ -76,6 +76,8 @@ Command cmdListNetorksJson(FST("networks"),
 FST("List WIFI networks as JSON"),
 nullptr, nullptr, CT_APP_JSON
 );
+#endif // ENABLE_CLI
+
 
 int setenv(const char *, const char *, int);
 void tzset();

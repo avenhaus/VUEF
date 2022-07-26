@@ -16,6 +16,7 @@ const char CT_TEXT_PLAIN[] PROGMEM = "text/plain";
 const char CT_APP_JSON[] PROGMEM = "application/json";
 #endif
 
+#if ENABLE_CLI
 CommandRegistry* CommandRegistry::mainCmdReg = nullptr;
 
 /************************************************************************\
@@ -180,3 +181,4 @@ Command cmdStats(FST("stats"),
 FST("Show controller stats")
 );
 
+#endif //ENABLE_CLI

@@ -17,6 +17,7 @@
 extern const char CT_TEXT_PLAIN[] PROGMEM;
 extern const char CT_APP_JSON[] PROGMEM;
 
+#if ENABLE_CLI
 static const uint8_t CMDF_HIDDEN = (uint8_t)(1<<0); 
 static const uint8_t CMDF_NEEDS_AUTH = (uint8_t)(7<<0); 
 
@@ -181,6 +182,7 @@ protected:
     uint8_t flags_;
 };
 
+#endif // ENABLE_CLI
 
 #endif // _COMMAND_H_
 

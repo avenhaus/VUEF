@@ -8,8 +8,8 @@
  * Constants
 \* ============================================== */
 
-extern const char* EMPTY_STRING;
-extern const char* NEW_LINE;
+extern const char EMPTY_STRING[];
+extern const char NEW_LINE[];
 
 extern const char HOSTNAME[] PROGMEM;
 extern const char PROJECT_NAME[] PROGMEM;

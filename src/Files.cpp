@@ -15,6 +15,7 @@ static const char* ROOT_DIR PROGMEM = "/";
 | SPIFFS command registry
 \*----------------------------------------------------------------------*/
 
+#if ENABLE_CLI
 CommandRegistry cmdRegSpiffs(FST("spiffs"));
 
 Command cmdSpiffsDir(FST("dir"), 
@@ -133,6 +134,8 @@ Command cmdSpiffsRenameDir(FST("mvdir"),
 },
 FST("Rename directory on SPIFFS"), &cmdRegSpiffs, FST("<old> <new>")
 );
+
+#endif // ENABLE_CLI
 
 /*----------------------------------------------------------------------*\
 | SPIFFS functions

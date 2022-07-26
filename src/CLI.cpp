@@ -10,6 +10,7 @@
 
 #include <string.h>
 
+#if ENABLE_CLI
 static const char OK_TEXT[] PROGMEM = "OK";
 
 const char* help_text = FST("\
@@ -100,3 +101,5 @@ const char* CommandLineInterpreter::help() {
   }
   return OK_TEXT;  
 }
+
+#endif // ENABLE_CLI

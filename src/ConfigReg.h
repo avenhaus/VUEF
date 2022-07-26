@@ -176,7 +176,7 @@ class ConfigFloat : public ConfigVarT<float> {
 public:
     ConfigFloat(const char* name, float deflt=0.0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, float* ptr=nullptr, bool (*setCb)(float val, void* cbData)=nullptr, float (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
         : ConfigVarT(name, deflt, FST("float"), info, fmt, group, ptr, setCb, getCb, cbData, flags) {
-            if (!fmt) { fmt_ = FST("%f"); }
+            if (!fmt) { fmt_ = FST("%g"); }
     }
 };
 
@@ -519,6 +519,22 @@ public:
         stream->write('}'); n++;        
         return n;
     }
+};
+
+
+/*----------------------------------------------------------------------*\
+ * Float Array
+\*----------------------------------------------------------------------*/
+class ConfigFloatArray : public ConfigArrayT<float> {
+public:
+    ConfigFloatArray(const char* name, size_t size, const float* deflt=nullptr, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, float* ptr=nullptr, bool (*setCb)(float* val, void* cbData)=nullptr, void (*getCb)(float* val, void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : ConfigArrayT(name, size, deflt, nullptr, info, fmt, group, ptr, setCb, getCb, cbData, flags) {
+            if (!fmt) { fmt_ = FST("%g"); }
+            sprintf(ths, FST("f[%d]"), size);
+            typeHelp_ = ths;
+        }
+protected:
+    char ths[16];
 };
 
 
