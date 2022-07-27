@@ -442,6 +442,17 @@ public:
         return n;
     }
 
+    T operator [] (size_t i) const { 
+        if (ptr_) { return ptr_[i]; }
+        return value_[i]; 
+    }
+
+    T& operator [] (size_t i) { 
+        if (ptr_) { return ptr_[i]; }
+        return value_[i]; 
+    }
+
+
 protected:
     size_t size_;
     const T* default_;

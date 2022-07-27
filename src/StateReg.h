@@ -235,6 +235,61 @@ public:
 
 
 /*----------------------------------------------------------------------*\
+ * Enum
+\*----------------------------------------------------------------------*/
+class StateEnum : public StateVarT<int> {
+public:
+    typedef struct Option { const char* text; int value; } Option;
+    StateEnum(const char* name, const Option* map, size_t mapSize, int value=0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, int* ptr=nullptr, int (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : StateVarT(name, value, FST("enum"), info, fmt, group, ptr, getCb, cbData, flags), map_(map), mapSize_(mapSize) {}
+
+    virtual bool set(int val) {
+        if (getIndex_(val) != ~0) { return StateVarT::set(val); }
+        DEBUG_printf(FST("StateEnum %s invalid value: %d\n"), name_, val);
+        return true;
+    }
+
+    virtual size_t getWebUi(Print* stream, uint32_t flags=0, RFFlag flagsMask=0) {
+        if ((flags_ ^ flags) & flagsMask) { return 0; }
+        size_t n = getWebUiCommon_(stream);
+        get();
+        n += stream->print(FST(",\"V\":"));
+        n += stream->print(value_);
+        n += stream->print(FST(",\"E\":\""));
+        if (getIndex_(value_) != ~0) { n += stream->print(map_[index_].text); }
+        else {
+            DEBUG_printf(FST("StateEnum %s invalid value: %d\n"), name_, value_);
+            n += stream->print(FST("???"));
+        }
+        stream->write('"'); n++;
+        stream->write('}'); n++;
+        return n;
+    }
+
+    virtual const char* getText() {
+        get();
+        if (getIndex_(value_) != ~0) { return map_[index_].text; }
+        DEBUG_printf(FST("StateEnum %s invalid value: %d\n"), name_, value_);
+        return FST("???");
+    }
+
+protected:
+    size_t getIndex_(int val) {
+        for (size_t i=0; i<mapSize_; i++) {
+            if (val == map_[i].value) { 
+                index_ = i;
+                return index_;
+            }
+        }
+        return ~0;
+    }
+
+    size_t index_;
+    const Option* map_;
+    const size_t mapSize_;
+};
+
+/*----------------------------------------------------------------------*\
  * String
 \*----------------------------------------------------------------------*/
 class StateStr : public StateVarT<char*> {

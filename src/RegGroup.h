@@ -218,11 +218,18 @@ public:
         group_->addVar(this);
     }
     virtual ~RegVar() {
+        removeGroup();
+    }
+    virtual void setGroup(RegGroup* group) {
+        removeGroup();
+        group_ = group;
+        group_->addVar(this);
+    }
+    virtual void removeGroup() {
         if (group_) {
             group_->removeVar(this);
             group_ = nullptr;
         }
-
     }
     virtual size_t print(Print& stream) = 0;
     virtual void printChangeJson(Print& out, char* namePrefix=nullptr, size_t npSize=0, size_t npEnd=0) {};
@@ -233,6 +240,10 @@ public:
     virtual size_t getWebUi(Print* stream, uint32_t flags=0, RFFlag flagsMask=0) = 0;
     virtual bool checkChange() { return false; };
     virtual void setDefault() {};
+    inline void setName(const char* text) { name_ = text; }
+    inline void setFmt(const char* text) { fmt_ = text; }
+    inline void setTypeHelp(const char* text) { typeHelp_ = text; }
+    inline void setInfo(const char* text) { info_ = text; }
     inline const char* name() { return name_; }
     inline const char* fmt() { return fmt_; }
     inline const char* typeHelp() { return typeHelp_; }
