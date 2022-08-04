@@ -21,6 +21,8 @@
 
 #include "RegGroup.h"
 #include "Helper.h"
+#include "VUEF.h"
+
 
 // Disable warning about char being deprecated. Not sure why it's needed...
 #define ARDUINOJSON_DEPRECATED(msg)
