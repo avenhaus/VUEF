@@ -34,8 +34,8 @@
 #define WIFI_AP_PASSWORD "12345678"
 #endif
 
-
-RegGroup configGroupNetwork(FST("Network"), nullptr, FST("Network Settings"));
+// Changing this name also requires change in settings.js: var EP_STA_SSID = "WIFI.SSID"; 
+RegGroup configGroupNetwork(FST("WIFI"), nullptr, FST("Network Settings"));
 
 const ConfigEnum::Option configWifiModeOptions[] PROGMEM = {
   { "Off", 0 },

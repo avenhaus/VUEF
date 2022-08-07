@@ -11,6 +11,10 @@
 
 static const char* ROOT_DIR PROGMEM = "/";
 
+// Behavior of SPIFFS name() has changed
+// #define FULL_NAME name
+#define FULL_NAME path
+
 /*----------------------------------------------------------------------*\
 | SPIFFS command registry
 \*----------------------------------------------------------------------*/
@@ -183,7 +187,7 @@ ErrorCode spiffsDeleteDir(const char* path, Print* s) {
   {
       File file = dir.openNextFile();
       while (file) {
-          const char* fullpath = file.name();
+          const char* fullpath = file.FULL_NAME();
           if (!SPIFFS.remove(fullpath)) {
               ec = EC_ERROR;
               if(s) { s->print(fullpath); s->print(FST(" failed to delete")); }
@@ -226,7 +230,7 @@ ErrorCode spiffsRenameDir(const char* oldPath, const char* newPath, Print* s) {
     {
         File file = dir.openNextFile();
         while (file) {
-            const char* oldName = file.name();
+            const char* oldName = file.FULL_NAME();
             size_t n = oldLen;
             size_t m = newLen;
             while (newName[n] && m < sizeof(newName)-2) { newName[m++] = oldName[n++]; }
@@ -333,7 +337,7 @@ ErrorCode spiffsFiles(const char* path, Print& s) {
     File currentFile = dir.openNextFile();
     while (currentFile) {
         StrTool::formatBytes(buffer, sizeof(buffer), currentFile.size());
-        s.printf(FST("%-12s  %s\r\n"), buffer, currentFile.name());
+        s.printf(FST("%-12s  %s\r\n"), buffer, currentFile.FULL_NAME());
         currentFile = dir.openNextFile();
     }
     dir.close();
@@ -364,7 +368,7 @@ ErrorCode spiffsFilesJson(const char* path, Print& s, const char* status/*=nullp
     std::set<String> subDirs;
     File currentFile = dir.openNextFile();
     while (currentFile) {
-        String filename = currentFile.name();
+        String filename = currentFile.FULL_NAME();
         filename = filename.substring(pathLen, filename.length());
         bool isVisible = true;
         // Check for sub dir
