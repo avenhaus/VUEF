@@ -19,11 +19,14 @@
 
 class TcpConnection : public Stream {
 public:
-  enum AcceptState { Busy, Accepted, NoConnection };
-  TcpConnection() :  buffer_index(0), cmdli(this) { buffer[0] = 0; }
+  typedef void (*GotDataCB)(char* line, size_t len, void* data);
+  enum AcceptState { Accepted, Busy, NoConnection };
+  TcpConnection() :  gotDataCB(nullptr), buffer_index(0), cmdli(this) { buffer[0] = 0; }
   AcceptState accept(WiFiServer& server);
+  AcceptState connect(const char* host, uint16_t port=23, int32_t timeout=0, GotDataCB cb=nullptr, void* cbData=nullptr);
   inline bool isConnected() { return connection.connected(); }
   void run();
+
 
 protected:
 
@@ -39,8 +42,11 @@ protected:
   char readHex();
 
   WiFiClient connection;
+  GotDataCB gotDataCB;
+  void* cbData;
   char buffer[COMMAND_BUFFER_SIZE];
   size_t buffer_index;
+  size_t len;
   CommandLineInterpreter cmdli;
 };
 
