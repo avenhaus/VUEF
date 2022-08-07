@@ -168,6 +168,15 @@ public:
         : ConfigVarT(name, deflt, FST("double"), info, fmt, group, ptr, setCb, getCb, cbData, flags) {
             if (!fmt) { fmt_ = FST("%f"); }
     }
+
+    virtual bool setFromJson(const JsonVariant& jv) {
+        if (!jv.is<JsonFloat>()) {
+            DEBUG_printf(FST("JSON config for \"%s\" is not a float\n"), name_);
+            return true;
+        }
+        set(jv);
+        return false;
+    }
 };
 
 
@@ -179,6 +188,15 @@ public:
     ConfigFloat(const char* name, float deflt=0.0, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, float* ptr=nullptr, bool (*setCb)(float val, void* cbData)=nullptr, float (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
         : ConfigVarT(name, deflt, FST("float"), info, fmt, group, ptr, setCb, getCb, cbData, flags) {
             if (!fmt) { fmt_ = FST("%g"); }
+    }
+
+    virtual bool setFromJson(const JsonVariant& jv) {
+        if (!jv.is<JsonFloat>()) {
+            DEBUG_printf(FST("JSON config for \"%s\" is not a float\n"), name_);
+            return true;
+        }
+        set(jv);
+        return false;
     }
 };
 

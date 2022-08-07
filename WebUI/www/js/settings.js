@@ -15,7 +15,7 @@ var settings_ui = {
 // var current_setting_filter = 'network';
 
 var setup_is_done = false;
-var EP_STA_SSID = "WIFI.SSID";
+var EP_STA_SSID = "Network.SSID";
 var wizard_mode = false;
 var RF_PASSWORD = (1<<5);
 var RF_WIZARD = (1<<6);
