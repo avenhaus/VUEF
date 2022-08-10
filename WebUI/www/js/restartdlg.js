@@ -6,7 +6,11 @@ function restartdlg() {
     //document.getElementById('prgrestart').style.display = 'block';
     //document.getElementById('restartmsg').innerHTML = "Restarting, please wait....";
     //showModal();
+<<<<<<< HEAD
     //SendPrinterCommand("restart", false, restart_esp_success, restart_esp_failed);
+=======
+    // SendPrinterCommand("restart", false, restart_esp_success, restart_esp_failed);
+>>>>>>> f4642681f31d5d69a95b8ef154c2299d8dbc27cd
     var url = "/command?plain=" + encodeURIComponent("restart");;
     SendGetHttp(url, restart_esp_success, restart_esp_failed);
 }

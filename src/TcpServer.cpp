@@ -32,6 +32,16 @@ TcpConnection::AcceptState TcpConnection::accept(WiFiServer &server) {
   return NoConnection;
 }
 
+TcpConnection::AcceptState TcpConnection::connect(const char* host, uint16_t port, int32_t timeout/*=0*/, GotDataCB cb/*=nullptr*/, void* cbData_/*=nullptr*/) {
+  if (isConnected()) {return Busy;}
+  if (!connection.connect(host, port, timeout)) {
+    return NoConnection;
+  }
+  gotDataCB = cb;
+  cbData = cbData_;
+  return Accepted; 
+}
+
 void TcpConnection::run() {
   if (!isConnected()) {
     DEBUG_println(F("Lost TCP connection!"));
@@ -39,17 +49,20 @@ void TcpConnection::run() {
   }
   while (readLine()) {
     DEBUG_println(buffer);
-    println(cmdli.execute(buffer));
+    if (gotDataCB) { gotDataCB(buffer, len, cbData); }
+    else { println(cmdli.execute(buffer)); }
     yield();
   }
 }
 
 bool TcpConnection::readLine() {
+  len = 0;
   while (isConnected() && connection.available()) {
     char c = read();
     buffer[buffer_index++] = c;
     if (c == '\n' || c == '\r' || c == '\0') { 
       buffer[buffer_index-1] = '\0';
+      len = buffer_index;
       buffer_index = 0;
       if (buffer[0] != '\0') return true;
     }
