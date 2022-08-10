@@ -198,6 +198,13 @@ public:
         set(jv);
         return false;
     }
+
+    virtual size_t setFromStr(const char* valStr, const char** errorStr=nullptr) {
+        float value = 0;
+        size_t n = StrTool::readFloat(valStr, &value, errorStr);
+        if (n) { set(value); }
+        return n;
+    }
 };
 
 

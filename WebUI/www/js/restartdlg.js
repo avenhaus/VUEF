@@ -5,8 +5,10 @@ function restartdlg() {
     if (modal == null) return;
     //document.getElementById('prgrestart').style.display = 'block';
     //document.getElementById('restartmsg').innerHTML = "Restarting, please wait....";
-    showModal();
-    SendPrinterCommand("restart", false, restart_esp_success, restart_esp_failed);
+    //showModal();
+    // SendPrinterCommand("restart", false, restart_esp_success, restart_esp_failed);
+    var url = "/command?plain=" + encodeURIComponent("restart");;
+    SendGetHttp(url, restart_esp_success, restart_esp_failed);
 }
 
 function restart_esp_success(response) {
