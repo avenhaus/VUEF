@@ -294,8 +294,8 @@ protected:
 \*----------------------------------------------------------------------*/
 class StateStr : public StateVarT<char*> {
 public:
-    StateStr(const char* name, const char* value=nullptr, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, char** ptr=nullptr, char* (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
-        : StateVarT(name, (char*)value, FST("str"), info, fmt, group, ptr, getCb, cbData, flags) {
+    StateStr(const char* name, const char* value=nullptr, const char* info=nullptr, const char* fmt=nullptr, RegGroup* group=nullptr, char** ptr=nullptr, const char* (*getCb)(void* cbData)=nullptr, void* cbData=nullptr, RFFlag flags=0)
+        : StateVarT(name, (char*)value, FST("str"), info, fmt, group, ptr, (char* (*)(void*)) getCb, cbData, flags) {
             if (!fmt) { fmt_ = FST("%s"); }
             //get();
             crc_ = StrTool::calculateStrCrc(value_);
